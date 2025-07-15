@@ -10,13 +10,16 @@ import {
   FaTimes,
   FaFlask,
   FaLink,
-  FaIdCard
+  FaIdCard,
+  FaSyncAlt
 } from 'react-icons/fa';
+import ConfirmDialog from './ConfirmDialog.jsx';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false);
 
   const navItems = [
     { icon: <FaTachometerAlt />, text: 'Dashboard', to: '/dashboard' },
@@ -27,6 +30,22 @@ const Sidebar = () => {
 
   const activeLinkClass = 'bg-blue-500 text-white';
   const inactiveLinkClass = 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700';
+
+  const handleRestartClick = () => {
+    setIsRestartConfirmOpen(true);
+  };
+
+  const handleConfirmRestart = () => {
+    // Di aplikasi nyata, ini akan memanggil API untuk mereset data
+    console.log("Sistem di-restart paksa!");
+    alert("Semua data transaksional (gudang, batch, cache) telah direset.");
+    setIsRestartConfirmOpen(false);
+    window.location.reload(); // Cara sederhana untuk mensimulasikan reset
+  };
+
+  const handleCancelRestart = () => {
+    setIsRestartConfirmOpen(false);
+  };
 
   return (
     <>
@@ -87,6 +106,21 @@ const Sidebar = () => {
           ))}
         </nav>
 
+        {/* Aksi Tambahan */}
+        <div className="px-2 py-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={handleRestartClick}
+            className={`w-full flex items-center p-2 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 ${
+              isCollapsed ? 'justify-center' : 'space-x-3'
+            }`}
+          >
+            <FaSyncAlt />
+            <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+              Force Restart
+            </span>
+          </button>
+        </div>
+
         {/* Footer Profil */}
         <div className="p-2 border-t border-gray-200 dark:border-gray-700 relative">
           {/* Popup Profil */}
@@ -127,6 +161,14 @@ const Sidebar = () => {
           </button>
         </div>
       </aside>
+
+      <ConfirmDialog
+        isOpen={isRestartConfirmOpen}
+        onClose={handleCancelRestart}
+        onConfirm={handleConfirmRestart}
+        title="Konfirmasi Force Restart"
+        message="Tindakan ini akan menghapus semua data link di gudang, batch, dan cache. Data kontak tidak akan terhapus. Apakah Anda yakin?"
+      />
     </>
   );
 };
