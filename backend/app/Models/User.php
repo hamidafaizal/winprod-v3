@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+// 1. Import HasApiTokens
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    // 2. Tambahkan trait HasApiTokens
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -26,7 +27,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -44,5 +45,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Mendefinisikan relasi bahwa seorang User memiliki banyak Kontak.
+     */
+    public function kontaks()
+    {
+        return $this->hasMany(Kontak::class);
+    }
+
+    /**
+     * Mendefinisikan relasi bahwa seorang User memiliki banyak item di Gudang.
+     */
+    public function gudangItems()
+    {
+        return $this->hasMany(Gudang::class);
+    }
+
+    /**
+     * Mendefinisikan relasi bahwa seorang User memiliki banyak Batch.
+     */
+    public function batchConfigs()
+    {
+        return $this->hasMany(BatchConfig::class);
+    }
+
+    /**
+     * Mendefinisikan relasi bahwa seorang User memiliki banyak Riwayat Pengiriman.
+     */
+    public function riwayatPengiriman()
+    {
+        return $this->hasMany(RiwayatPengiriman::class);
+    }
+
+    /**
+     * Mendefinisikan relasi bahwa seorang User memiliki banyak Cache Link.
+     */
+    public function cacheLinks()
+    {
+        return $this->hasMany(CacheLink::class);
     }
 }

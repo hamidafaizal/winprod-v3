@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 import { 
   FaTachometerAlt, 
   FaMobileAlt, 
@@ -14,13 +15,20 @@ import {
   FaSyncAlt
 } from 'react-icons/fa';
 import ConfirmDialog from './ConfirmDialog.jsx';
-import { forceRestartSystem } from '../api.js'; // Import fungsi API
+import { forceRestartSystem } from '../api.js';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false);
+  const { user, logout } = useAuth(); // Dapatkan user dan fungsi logout
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const navItems = [
     { icon: <FaTachometerAlt />, text: 'Dashboard', to: '/dashboard' },
@@ -39,8 +47,8 @@ const Sidebar = () => {
   const handleConfirmRestart = async () => {
     try {
       const response = await forceRestartSystem();
-      alert(response.data.message); // Tampilkan pesan sukses dari server
-      window.location.reload(); // Muat ulang halaman untuk melihat perubahan
+      alert(response.data.message);
+      window.location.reload();
     } catch (error) {
       console.error("Gagal melakukan force restart:", error);
       const errorMessage = error.response?.data?.message || "Gagal menghubungi server.";
@@ -56,7 +64,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Tombol Menu Mobile */}
       <button 
         className="md:hidden fixed top-4 left-4 z-30 p-2 bg-white dark:bg-gray-800 rounded-md"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -64,7 +71,6 @@ const Sidebar = () => {
         {isMobileOpen ? <FaTimes /> : <FaBars />}
       </button>
 
-      {/* Overlay untuk Mobile */}
       {isMobileOpen && (
         <div 
           className="md:hidden fixed inset-0 bg-black opacity-50 z-10" 
@@ -72,13 +78,11 @@ const Sidebar = () => {
         ></div>
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed md:relative flex flex-col bg-white dark:bg-gray-800 shadow-xl transition-all duration-300 ease-in-out z-20 ${
           isCollapsed ? 'w-20' : 'w-64'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 min-h-screen`}
       >
-        {/* Header */}
         <div className="flex items-center p-4">
           <h1 className={`text-xl font-bold text-gray-800 dark:text-white overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
             WinProd
@@ -92,7 +96,6 @@ const Sidebar = () => {
           </button>
         </div>
 
-        {/* Navigasi */}
         <nav className="flex-1 px-2 space-y-2">
           {navItems.map((item, index) => (
             <NavLink
@@ -113,7 +116,6 @@ const Sidebar = () => {
           ))}
         </nav>
 
-        {/* Aksi Tambahan */}
         <div className="px-2 py-4 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={handleRestartClick}
@@ -128,9 +130,7 @@ const Sidebar = () => {
           </button>
         </div>
 
-        {/* Footer Profil */}
         <div className="p-2 border-t border-gray-200 dark:border-gray-700 relative">
-          {/* Popup Profil */}
           {isProfileOpen && (
             <div
               className={`absolute bottom-full mb-2 bg-white dark:bg-gray-700 rounded-lg shadow-lg p-2 transition-all duration-300 ${
@@ -145,13 +145,13 @@ const Sidebar = () => {
                 <FaIdCard />
                 <span>Profil Saya</span>
               </Link>
-              <Link
-                to="/login"
+              <button
+                onClick={handleLogout}
                 className="w-full flex items-center space-x-2 p-2 text-sm text-red-500 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"
               >
                 <FaSignOutAlt />
                 <span>Logout</span>
-              </Link>
+              </button>
             </div>
           )}
 
@@ -163,7 +163,7 @@ const Sidebar = () => {
           >
             <FaUserCircle className="text-2xl text-gray-500" />
             <div className={`text-left overflow-hidden whitespace-nowrap transition-all duration-200 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-              <p className="text-sm font-semibold text-gray-800 dark:text-white">Hamida Dev</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">{user?.name || 'Guest'}</p>
             </div>
           </button>
         </div>

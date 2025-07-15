@@ -1,5 +1,6 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
 // Layouts
 import MainLayout from './layouts/MainLayout.jsx';
@@ -7,6 +8,7 @@ import AuthLayout from './layouts/AuthLayout.jsx';
 
 // Components
 import LoadingSpinner from './components/LoadingSpinner.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx'; // Asumsi tombol tema dipisah
 
 // Halaman (Lazy Loaded)
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
@@ -17,58 +19,45 @@ const RisetPage = lazy(() => import('./pages/RisetPage.jsx'));
 const DistribusiLinkPage = lazy(() => import('./pages/DistribusiLinkPage.jsx'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage.jsx'));
 
-// Icons
-import { FaSun, FaMoon } from 'react-icons/fa';
+// Komponen untuk rute yang dilindungi
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+// Komponen untuk rute otentikasi (login/register)
+const AuthRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+};
 
 function App() {
-  // Simulasi status otentikasi, untuk sementara di-set true
-  const isAuthenticated = true;
-
-  // State untuk mengelola tema
-  const [theme, setTheme] = useState('light');
-
-  // useEffect untuk mengubah kelas pada elemen <html> saat tema berubah
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
-  };
-
   return (
     <>
-      {/* Tombol ganti tema */}
-      <button
-        onClick={toggleTheme}
-        className="fixed bottom-4 right-4 z-50 bg-gray-200 dark:bg-gray-700 p-2 rounded-full text-lg shadow-md"
-      >
-        {theme === 'light' ? <FaMoon /> : <FaSun />}
-      </button>
-
-      {/* Konfigurasi routing utama aplikasi */}
+      <ThemeToggle />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Rute untuk halaman yang tidak memerlukan login */}
-          <Route element={!isAuthenticated ? <AuthLayout /> : <Navigate to="/dashboard" />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
+            <Route path="/register" element={<AuthRoute><RegisterPage /></AuthRoute>} />
           </Route>
 
           {/* Rute untuk halaman yang memerlukan login */}
-          <Route element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/manajemen-hp" element={<ManajemenHpPage />} />
-            <Route path="/riset" element={<RisetPage />} />
-            <Route path="/distribusi-link" element={<DistribusiLinkPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            {/* Arahkan path root ke dashboard */}
+          <Route element={<MainLayout />}>
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/manajemen-hp" element={<ProtectedRoute><ManajemenHpPage /></ProtectedRoute>} />
+            <Route path="/riset" element={<ProtectedRoute><RisetPage /></ProtectedRoute>} />
+            <Route path="/distribusi-link" element={<ProtectedRoute><DistribusiLinkPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            {/* Arahkan path root dan path tidak dikenal */}
             <Route path="/" element={<Navigate to="/dashboard" />} />
-            {/* Tangkap semua path lain dan arahkan ke dashboard */}
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>

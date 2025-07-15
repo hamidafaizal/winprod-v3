@@ -8,6 +8,15 @@ const apiClient = axios.create({
   },
 });
 
+// --- Auth --- (Fungsi ini sekarang akan dikelola oleh AuthContext, 
+// namun kita biarkan di sini jika diperlukan di tempat lain.
+// Interceptor di AuthContext lebih diutamakan)
+export const registerUser = (data) => apiClient.post('/register', data);
+export const loginUser = (credentials) => apiClient.post('/login', credentials);
+export const logoutUser = () => apiClient.post('/logout');
+export const getUser = () => apiClient.get('/user');
+
+
 // --- Kontak ---
 export const getKontaks = () => apiClient.get('/kontak');
 export const createKontak = (kontakData) => apiClient.post('/kontak', kontakData);
@@ -31,6 +40,6 @@ export const logSentLinks = (batchId) => apiClient.post('/distribusi/log-sent', 
 
 // --- Dashboard ---
 export const forceRestartSystem = () => apiClient.post('/dashboard/force-restart');
-export const getDashboardHistory = () => apiClient.get('/dashboard/history'); // Fungsi baru
+export const getDashboardHistory = () => apiClient.get('/dashboard/history');
 
 export default apiClient;
