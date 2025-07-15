@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// Konfigurasi instance axios
 const apiClient = axios.create({
-  baseURL: '/api', // URL dasar akan di-proxy oleh Vite ke backend Laravel
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -18,9 +17,7 @@ export const deleteKontak = (id) => apiClient.delete(`/kontak/${id}`);
 // --- Riset ---
 export const uploadRisetFiles = (formData) => {
   return apiClient.post('/riset/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
 
@@ -34,6 +31,6 @@ export const logSentLinks = (batchId) => apiClient.post('/distribusi/log-sent', 
 
 // --- Dashboard ---
 export const forceRestartSystem = () => apiClient.post('/dashboard/force-restart');
-
+export const getDashboardHistory = () => apiClient.get('/dashboard/history'); // Fungsi baru
 
 export default apiClient;

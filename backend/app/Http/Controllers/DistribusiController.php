@@ -7,6 +7,7 @@ use App\Models\Gudang;
 use App\Models\BatchConfig;
 use App\Models\Kontak;
 use App\Models\CacheLink;
+use App\Models\RiwayatPengiriman;
 use Illuminate\Support\Facades\DB;
 
 class DistribusiController extends Controller
@@ -122,9 +123,9 @@ class DistribusiController extends Controller
     {
         return response()->json($batch->links()->get());
     }
-
+    
     /**
-     * Mencatat link yang sudah terkirim ke cache.
+     * Mencatat link yang sudah terkirim ke cache dan membuat riwayat.
      */
     public function logSentLinks(Request $request)
     {
@@ -132,19 +133,27 @@ class DistribusiController extends Controller
         $batchId = $request->input('batch_id');
 
         DB::transaction(function () use ($batchId) {
+            $batch = BatchConfig::find($batchId);
             $sentLinks = Gudang::where('batch_config_id', $batchId)->get();
 
-            if ($sentLinks->isEmpty()) {
+            if ($sentLinks->isEmpty() || !$batch->kontak_id) {
                 return;
             }
 
-            // Pindahkan ke cache
+            // 1. Buat catatan di riwayat pengiriman
+            RiwayatPengiriman::create([
+                'kontak_id' => $batch->kontak_id,
+                'batch_config_id' => $batch->id,
+                'jumlah_link' => $sentLinks->count(),
+            ]);
+
+            // 2. Pindahkan ke cache
             $linksToCache = $sentLinks->map(function ($link) {
                 return ['product_link' => $link->product_link, 'created_at' => now(), 'updated_at' => now()];
             })->all();
             CacheLink::insert($linksToCache);
 
-            // Hapus dari gudang
+            // 3. Hapus dari gudang
             Gudang::whereIn('id', $sentLinks->pluck('id'))->delete();
         });
 

@@ -11,11 +11,6 @@ use App\Http\Controllers\DashboardController;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -38,5 +33,6 @@ Route::prefix('distribusi')->group(function () {
     Route::post('/log-sent', [DistribusiController::class, 'logSentLinks']);
 });
 
-// Route untuk Force Restart
+// Routes untuk Dashboard
 Route::post('/dashboard/force-restart', [DashboardController::class, 'forceRestart']);
+Route::get('/dashboard/history', [DashboardController::class, 'getHistory']); // Route baru
