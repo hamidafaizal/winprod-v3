@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { FaTachometerAlt, FaMobileAlt, FaChevronLeft, FaUserCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { 
+  FaTachometerAlt, 
+  FaMobileAlt, 
+  FaChevronLeft, 
+  FaUserCircle, 
+  FaSignOutAlt, 
+  FaBars, 
+  FaTimes,
+  FaFlask,
+  FaLink,
+  FaIdCard
+} from 'react-icons/fa';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -10,6 +21,8 @@ const Sidebar = () => {
   const navItems = [
     { icon: <FaTachometerAlt />, text: 'Dashboard', to: '/dashboard' },
     { icon: <FaMobileAlt />, text: 'Manajemen HP', to: '/manajemen-hp' },
+    { icon: <FaFlask />, text: 'Riset', to: '/riset' },
+    { icon: <FaLink />, text: 'Distribusi Link', to: '/distribusi-link' },
   ];
 
   const activeLinkClass = 'bg-blue-500 text-white';
@@ -17,7 +30,7 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Tombol Menu Mobile */}
       <button 
         className="md:hidden fixed top-4 left-4 z-30 p-2 bg-white dark:bg-gray-800 rounded-md"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -25,7 +38,7 @@ const Sidebar = () => {
         {isMobileOpen ? <FaTimes /> : <FaBars />}
       </button>
 
-      {/* Overlay for Mobile */}
+      {/* Overlay untuk Mobile */}
       {isMobileOpen && (
         <div 
           className="md:hidden fixed inset-0 bg-black opacity-50 z-10" 
@@ -40,8 +53,11 @@ const Sidebar = () => {
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 min-h-screen`}
       >
         {/* Header */}
-        <div className={`flex items-center p-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-          {!isCollapsed && <h1 className="text-xl font-bold text-gray-800 dark:text-white">WinProd</h1>}
+        <div className="flex items-center p-4">
+          <h1 className={`text-xl font-bold text-gray-800 dark:text-white overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+            WinProd
+          </h1>
+          <div className="flex-grow" />
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 hidden md:block"
@@ -50,7 +66,7 @@ const Sidebar = () => {
           </button>
         </div>
 
-        {/* Navigation */}
+        {/* Navigasi */}
         <nav className="flex-1 px-2 space-y-2">
           {navItems.map((item, index) => (
             <NavLink
@@ -58,24 +74,36 @@ const Sidebar = () => {
               to={item.to}
               onClick={() => isMobileOpen && setIsMobileOpen(false)}
               className={({ isActive }) =>
-                `flex items-center p-2 rounded-lg space-x-3 ${isActive ? activeLinkClass : inactiveLinkClass} ${isCollapsed ? 'justify-center' : ''}`
+                `flex items-center p-2 rounded-lg ${isActive ? activeLinkClass : inactiveLinkClass} ${
+                  isCollapsed ? 'justify-center' : 'space-x-3'
+                }`
               }
             >
               <span className="text-xl">{item.icon}</span>
-              {!isCollapsed && <span>{item.text}</span>}
+              <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                {item.text}
+              </span>
             </NavLink>
           ))}
         </nav>
 
-        {/* Profile Footer */}
+        {/* Footer Profil */}
         <div className="p-2 border-t border-gray-200 dark:border-gray-700 relative">
-          {/* Profile Popup */}
+          {/* Popup Profil */}
           {isProfileOpen && (
-            <div className="absolute bottom-full mb-2 w-full bg-white dark:bg-gray-700 rounded-lg shadow-lg p-2">
-              <div className="p-2">
-                <p className="font-semibold text-sm text-gray-800 dark:text-white">Hamida Dev</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">hamida.dev@example.com</p>
-              </div>
+            <div
+              className={`absolute bottom-full mb-2 bg-white dark:bg-gray-700 rounded-lg shadow-lg p-2 transition-all duration-300 ${
+                isCollapsed ? 'left-0 w-48' : 'w-full'
+              }`}
+            >
+              <Link
+                to="/profile"
+                onClick={() => setIsProfileOpen(false)}
+                className="w-full flex items-center space-x-2 p-2 text-sm text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"
+              >
+                <FaIdCard />
+                <span>Profil Saya</span>
+              </Link>
               <Link
                 to="/login"
                 className="w-full flex items-center space-x-2 p-2 text-sm text-red-500 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"
@@ -88,14 +116,14 @@ const Sidebar = () => {
 
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className={`w-full flex items-center p-2 rounded-lg space-x-3 hover:bg-gray-200 dark:hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}
+            className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 ${
+              isCollapsed ? 'justify-center' : 'space-x-3'
+            }`}
           >
             <FaUserCircle className="text-2xl text-gray-500" />
-            {!isCollapsed && (
-              <div className="text-left">
-                <p className="text-sm font-semibold text-gray-800 dark:text-white">Hamida Dev</p>
-              </div>
-            )}
+            <div className={`text-left overflow-hidden whitespace-nowrap transition-all duration-200 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">Hamida Dev</p>
+            </div>
           </button>
         </div>
       </aside>
