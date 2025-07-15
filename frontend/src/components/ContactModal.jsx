@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 const ContactModal = ({ isOpen, onClose, onSave, contact }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [nama, setNama] = useState('');
+  const [nomor_hp, setNomorHp] = useState('');
 
   useEffect(() => {
     if (contact) {
-      setName(contact.name);
-      setNumber(contact.number);
+      setNama(contact.nama || '');
+      setNomorHp(contact.nomor_hp || '');
     } else {
-      setName('');
-      setNumber('');
+      setNama('');
+      setNomorHp('');
     }
   }, [contact, isOpen]);
 
@@ -18,11 +18,12 @@ const ContactModal = ({ isOpen, onClose, onSave, contact }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !number) {
+    if (!nama || !nomor_hp) {
       alert('Nama dan Nomor HP tidak boleh kosong.');
       return;
     }
-    onSave({ ...contact, name, number });
+    // Kirim data dengan key yang sesuai dengan backend
+    onSave({ ...contact, nama, nomor_hp });
   };
 
   return (
@@ -33,27 +34,27 @@ const ContactModal = ({ isOpen, onClose, onSave, contact }) => {
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="nama" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Nama
             </label>
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="nama"
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
               placeholder="Masukkan nama kontak"
               className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
             />
           </div>
           <div className="mb-6">
-            <label htmlFor="number" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="nomor_hp" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Nomor HP
             </label>
             <input
               type="tel"
-              id="number"
-              value={number}
-              onChange={(e) => setNumber(e.target.value)}
+              id="nomor_hp"
+              value={nomor_hp}
+              onChange={(e) => setNomorHp(e.target.value)}
               placeholder="Contoh: 081234567890"
               className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
             />

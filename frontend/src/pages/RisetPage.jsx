@@ -1,46 +1,51 @@
 import React, { useState } from 'react';
 import FileUpload from '../components/FileUpload.jsx';
-import { FaRocket } from 'react-icons/fa';
+import { FaRocket, FaSpinner } from 'react-icons/fa';
+import { uploadRisetFiles } from '../api.js';
 
 const RisetPage = () => {
-  const [rank, setRank] = useState(10); // State untuk Rank
+  const [rank, setRank] = useState(10);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processLog, setProcessLog] = useState([]);
 
   const handleFilesSelected = (files) => {
     setSelectedFiles(files);
   };
 
-  const handleStartProcessing = () => {
+  const handleStartProcessing = async () => {
     if (selectedFiles.length === 0) {
       alert('Silakan pilih setidaknya satu file CSV untuk diproses.');
       return;
     }
 
     setIsProcessing(true);
-    // Menambahkan log untuk menunjukkan rank yang digunakan
-    setProcessLog([`Memulai proses dengan Rank=${rank} untuk ${selectedFiles.length} file...`]);
 
-    // Simulasi proses backend
-    setTimeout(() => {
-      const newLogs = [`Memulai proses dengan Rank=${rank} untuk ${selectedFiles.length} file...`];
-      selectedFiles.forEach((file, index) => {
-        setTimeout(() => {
-          const successCount = Math.floor(Math.random() * 100);
-          const duplicateCount = Math.floor(Math.random() * 20);
-          newLogs.push(`[File ${index + 1}: ${file.name}] Selesai. Ditemukan ${successCount} link baru, ${duplicateCount} duplikat diabaikan.`);
-          setProcessLog([...newLogs]);
-        }, (index + 1) * 1500);
-      });
+    const formData = new FormData();
+    formData.append('rank', rank);
+    selectedFiles.forEach(file => {
+      formData.append('files[]', file);
+    });
 
-      setTimeout(() => {
-        newLogs.push('Semua proses selesai.');
-        setProcessLog([...newLogs]);
-        setIsProcessing(false);
-        setSelectedFiles([]);
-      }, selectedFiles.length * 1500 + 500);
-    }, 1000);
+    try {
+      const response = await uploadRisetFiles(formData);
+      const { message, added, duplicates } = response.data;
+      
+      // Tampilkan hasil dalam alert sederhana
+      alert(
+        `${message}\n\n` +
+        `Berhasil ditambahkan: ${added} link baru.\n` +
+        `Duplikat ditemukan: ${duplicates} link diabaikan.`
+      );
+
+    } catch (error) {
+      console.error("Error saat mengunggah file:", error.response || error);
+      const errorMessage = error.response?.data?.message || 'Terjadi kesalahan saat berkomunikasi dengan server.';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsProcessing(false);
+      // Kosongkan file setelah selesai agar tidak terkirim ulang
+      setSelectedFiles([]);
+    }
   };
 
   return (
@@ -78,23 +83,11 @@ const RisetPage = () => {
             disabled={selectedFiles.length === 0 || isProcessing}
             className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            <FaRocket className={`mr-3 ${isProcessing ? 'animate-spin' : ''}`} />
+            {isProcessing ? <FaSpinner className="animate-spin mr-3" /> : <FaRocket className="mr-3" />}
             {isProcessing ? 'Sedang Memproses...' : 'Mulai Proses'}
           </button>
         </div>
       </div>
-
-      {/* Log Proses */}
-      {processLog.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Log Proses:</h3>
-          <div className="bg-gray-900 text-white p-4 rounded-md font-mono text-sm h-48 overflow-y-auto">
-            {processLog.map((log, index) => (
-              <p key={index}>{'> '}{log}</p>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

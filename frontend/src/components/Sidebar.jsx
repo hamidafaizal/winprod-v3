@@ -14,6 +14,7 @@ import {
   FaSyncAlt
 } from 'react-icons/fa';
 import ConfirmDialog from './ConfirmDialog.jsx';
+import { forceRestartSystem } from '../api.js'; // Import fungsi API
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -35,12 +36,18 @@ const Sidebar = () => {
     setIsRestartConfirmOpen(true);
   };
 
-  const handleConfirmRestart = () => {
-    // Di aplikasi nyata, ini akan memanggil API untuk mereset data
-    console.log("Sistem di-restart paksa!");
-    alert("Semua data transaksional (gudang, batch, cache) telah direset.");
-    setIsRestartConfirmOpen(false);
-    window.location.reload(); // Cara sederhana untuk mensimulasikan reset
+  const handleConfirmRestart = async () => {
+    try {
+      const response = await forceRestartSystem();
+      alert(response.data.message); // Tampilkan pesan sukses dari server
+      window.location.reload(); // Muat ulang halaman untuk melihat perubahan
+    } catch (error) {
+      console.error("Gagal melakukan force restart:", error);
+      const errorMessage = error.response?.data?.message || "Gagal menghubungi server.";
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsRestartConfirmOpen(false);
+    }
   };
 
   const handleCancelRestart = () => {
