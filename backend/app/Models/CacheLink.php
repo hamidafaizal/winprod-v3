@@ -11,7 +11,14 @@ class CacheLink extends Model
 
     protected $table = 'cache_links';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'product_link',
+        // Perubahan: Tambahkan user_id agar bisa diisi.
+        'user_id',
     ];
 }

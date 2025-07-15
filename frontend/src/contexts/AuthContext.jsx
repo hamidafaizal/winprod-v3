@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
                     setUser(response.data);
                 })
                 .catch(() => {
-                    // Token tidak valid, hapus dari local storage
                     localStorage.removeItem('token');
                     setToken(null);
                     delete apiClient.defaults.headers.common['Authorization'];
@@ -53,12 +52,16 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Logout failed, possibly due to invalid token on server. Clearing client-side session.", error);
         } finally {
-            // Selalu hapus data di sisi client, apapun respons server
             localStorage.removeItem('token');
             setToken(null);
             setUser(null);
             delete apiClient.defaults.headers.common['Authorization'];
         }
+    };
+
+    // Perubahan: Tambahkan fungsi untuk memperbarui state user secara lokal
+    const updateUser = (updatedUserData) => {
+        setUser(updatedUserData);
     };
 
     const value = {
@@ -67,10 +70,10 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        updateUser, // Perubahan: Ekspor fungsi updateUser
         isAuthenticated: !!token,
     };
 
-    // Tampilkan loading spinner jika sedang memeriksa token
     if (loading) {
         return <LoadingSpinner />;
     }

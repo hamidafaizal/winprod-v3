@@ -11,10 +11,17 @@ class RiwayatPengiriman extends Model
 
     protected $table = 'riwayat_pengiriman';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'kontak_id',
         'batch_config_id',
         'jumlah_link',
+        // Perubahan: Tambahkan user_id agar bisa diisi.
+        'user_id',
     ];
 
     /**

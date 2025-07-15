@@ -11,10 +11,17 @@ class BatchConfig extends Model
 
     protected $table = 'batch_configs';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'nama',
         'kapasitas',
         'kontak_id',
+        // Perubahan: Tambahkan user_id agar bisa diisi secara massal.
+        'user_id',
     ];
 
     /**

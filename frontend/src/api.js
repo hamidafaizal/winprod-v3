@@ -8,13 +8,13 @@ const apiClient = axios.create({
   },
 });
 
-// --- Auth --- (Fungsi ini sekarang akan dikelola oleh AuthContext, 
-// namun kita biarkan di sini jika diperlukan di tempat lain.
-// Interceptor di AuthContext lebih diutamakan)
+// --- Auth ---
 export const registerUser = (data) => apiClient.post('/register', data);
 export const loginUser = (credentials) => apiClient.post('/login', credentials);
 export const logoutUser = () => apiClient.post('/logout');
 export const getUser = () => apiClient.get('/user');
+// Perubahan: Tambahkan fungsi untuk update profil
+export const updateUserProfile = (data) => apiClient.put('/user/profile', data);
 
 
 // --- Kontak ---

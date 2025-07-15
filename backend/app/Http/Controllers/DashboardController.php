@@ -4,47 +4,47 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema; // Import Schema Facade
+use Illuminate\Support\Facades\Schema;
 use App\Models\Gudang;
 use App\Models\CacheLink;
 use App\Models\BatchConfig;
 use App\Models\RiwayatPengiriman;
+// Perubahan: Mengimpor Auth facade untuk mendapatkan data pengguna yang login.
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     /**
-     * Mereset semua data transaksional dengan aman.
+     * Mereset semua data transaksional dengan aman untuk pengguna yang sedang login.
      */
     public function forceRestart()
     {
+        $user = Auth::user();
+
         try {
-            // Nonaktifkan foreign key checks untuk sementara
-            Schema::disableForeignKeyConstraints();
+            // Perubahan: Hapus data hanya milik user yang sedang login
+            Gudang::where('user_id', $user->id)->delete();
+            CacheLink::where('user_id', $user->id)->delete();
+            BatchConfig::where('user_id', $user->id)->delete();
+            RiwayatPengiriman::where('user_id', $user->id)->delete();
 
-            // Gunakan truncate untuk mereset tabel dengan cepat
-            Gudang::truncate();
-            CacheLink::truncate();
-            BatchConfig::truncate();
-            RiwayatPengiriman::truncate();
-
-            // Aktifkan kembali foreign key checks
-            Schema::enableForeignKeyConstraints();
-
-            return response()->json(['message' => 'Sistem berhasil direset. Semua data link dan batch telah dihapus.'], 200);
+            return response()->json(['message' => 'Sistem berhasil direset. Semua data link dan batch Anda telah dihapus.'], 200);
         } catch (\Exception $e) {
-            // Jika terjadi error, pastikan foreign key checks diaktifkan kembali
-            Schema::enableForeignKeyConstraints();
-            \Log::error('Force Restart Failed: ' . $e->getMessage());
+            \Log::error('Force Restart Failed for user ' . $user->id . ': ' . $e->getMessage());
             return response()->json(['message' => 'Gagal mereset sistem.'], 500);
         }
     }
 
     /**
-     * Mengambil data riwayat pengiriman.
+     * Mengambil data riwayat pengiriman milik pengguna yang sedang login.
      */
     public function getHistory()
     {
-        $history = RiwayatPengiriman::with('kontak')
+        $user = Auth::user();
+
+        // Perubahan: Ambil riwayat yang hanya dimiliki oleh user ini
+        $history = RiwayatPengiriman::where('user_id', $user->id)
+            ->with('kontak')
             ->orderBy('created_at', 'desc')
             ->take(20)
             ->get();

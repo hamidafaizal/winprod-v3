@@ -6,7 +6,7 @@ use App\Http\Controllers\KontakController;
 use App\Http\Controllers\RisetController;
 use App\Http\Controllers\DistribusiController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AuthController; // Import AuthController
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,16 +14,15 @@ use App\Http\Controllers\AuthController; // Import AuthController
 |--------------------------------------------------------------------------
 */
 
-// Route publik untuk login dan register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Route yang dilindungi oleh otentikasi (memerlukan login)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    // Perubahan: Tambahkan route untuk update profil
+    Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
-    // Pindahkan semua route lama ke dalam grup ini
     Route::apiResource('kontak', KontakController::class);
 
     Route::post('/riset/upload', [RisetController::class, 'processUpload']);
