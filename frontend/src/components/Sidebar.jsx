@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Import useAuth
+import { useAuth } from '../contexts/AuthContext';
 import { 
   FaTachometerAlt, 
   FaMobileAlt, 
@@ -13,7 +13,8 @@ import {
   FaLink,
   FaIdCard,
   FaSyncAlt,
-  FaLaptopCode // Menambahkan ikon baru untuk PWA
+  FaLaptopCode,
+  FaShareSquare // Menambahkan ikon baru untuk Distribusi PWA
 } from 'react-icons/fa';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import { forceRestartSystem } from '../api.js';
@@ -23,7 +24,7 @@ const Sidebar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false);
-  const { user, logout } = useAuth(); // Dapatkan user dan fungsi logout
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -34,10 +35,11 @@ const Sidebar = () => {
   const navItems = [
     { icon: <FaTachometerAlt />, text: 'Dashboard', to: '/dashboard' },
     { icon: <FaMobileAlt />, text: 'Manajemen HP', to: '/manajemen-hp' },
-    // Menambahkan item navigasi baru untuk Manajemen PWA
     { icon: <FaLaptopCode />, text: 'Manajemen PWA', to: '/manajemen-pwa' },
     { icon: <FaFlask />, text: 'Riset', to: '/riset' },
-    { icon: <FaLink />, text: 'Distribusi Link', to: '/distribusi-link' },
+    { icon: <FaLink />, text: 'Distribusi (WA)', to: '/distribusi-link' },
+    // Menambahkan item navigasi baru untuk Distribusi PWA
+    { icon: <FaShareSquare />, text: 'Distribusi (PWA)', to: '/distribusi-pwa' },
   ];
 
   const activeLinkClass = 'bg-blue-500 text-white';

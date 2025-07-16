@@ -31,6 +31,7 @@ export const uploadRisetFiles = (formData) => {
 
 // --- Distribusi ---
 export const getDistribusiState = () => apiClient.get('/distribusi/state');
+export const getPwaDistribusiState = () => apiClient.get('/distribusi/pwa-state'); // Menambahkan fungsi baru
 export const setupBatches = (jumlahHp) => apiClient.post('/distribusi/setup-batches', { jumlah_hp: jumlahHp });
 export const distributeLinks = () => apiClient.post('/distribusi/distribute');
 export const updateBatch = (batchId, data) => apiClient.put(`/distribusi/batch/${batchId}`, data);
@@ -43,10 +44,9 @@ export const getDashboardHistory = () => apiClient.get('/dashboard/history');
 
 // --- PWA Devices ---
 export const getPwaDevices = () => apiClient.get('/pwa/devices');
-// Fungsi untuk membuat token QR di PC
 export const generatePairingToken = () => apiClient.post('/pwa/generate-pairing-token');
-// Fungsi untuk PWA di HP mengirimkan hasil scan
 export const pairPwaDevice = (data) => apiClient.post('/pwa/pair-device', data);
+export const deletePwaDevice = (id) => apiClient.delete(`/pwa/devices/${id}`);
 
 
 export default apiClient;

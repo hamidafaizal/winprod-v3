@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FaQrcode, FaTrash } from 'react-icons/fa';
-import { getPwaDevices, generatePairingToken } from '../api.js'; // Menggunakan generatePairingToken
+import { getPwaDevices, generatePairingToken, deletePwaDevice } from '../api.js'; // Menggunakan fungsi API baru
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
-import QrDisplayModal from '../components/QrDisplayModal.jsx'; // Menggunakan modal QR yang baru
+import QrDisplayModal from '../components/QrDisplayModal.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx'; // Import dialog konfirmasi
 
 const ManajemenPwaPage = () => {
   const [devices, setDevices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [pairingToken, setPairingToken] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deletingDeviceId, setDeletingDeviceId] = useState(null);
 
   const fetchDevices = async () => {
     setIsLoading(true);
@@ -29,7 +32,7 @@ const ManajemenPwaPage = () => {
 
   const handleTambahPerangkat = async () => {
     setIsQrModalOpen(true);
-    setPairingToken(null); // Kosongkan token lama
+    setPairingToken(null);
     try {
       const response = await generatePairingToken();
       setPairingToken(response.data.token);
@@ -37,6 +40,26 @@ const ManajemenPwaPage = () => {
       console.error("Gagal membuat token pairing:", error);
       alert("Gagal membuat QR Code. Silakan coba lagi.");
       setIsQrModalOpen(false);
+    }
+  };
+
+  const handleDeleteClick = (id) => {
+    setDeletingDeviceId(id);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingDeviceId) return;
+    try {
+      await deletePwaDevice(deletingDeviceId);
+      alert('Perangkat berhasil dihapus.');
+      fetchDevices(); // Muat ulang daftar perangkat
+    } catch (error) {
+      console.error("Gagal menghapus perangkat:", error);
+      alert("Gagal menghapus perangkat. Silakan coba lagi.");
+    } finally {
+      setIsConfirmOpen(false);
+      setDeletingDeviceId(null);
     }
   };
 
@@ -80,7 +103,7 @@ const ManajemenPwaPage = () => {
                       </th>
                       <td className="px-6 py-4">{formatDate(device.created_at)}</td>
                       <td className="px-6 py-4 flex justify-center space-x-4">
-                        <button className="text-red-500 hover:text-red-700">
+                        <button onClick={() => handleDeleteClick(device.id)} className="text-red-500 hover:text-red-700">
                           <FaTrash size={18} />
                         </button>
                       </td>
@@ -103,6 +126,14 @@ const ManajemenPwaPage = () => {
         isOpen={isQrModalOpen}
         onClose={() => setIsQrModalOpen(false)}
         token={pairingToken}
+      />
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Konfirmasi Hapus"
+        message="Apakah Anda yakin ingin menghapus perangkat ini?"
       />
     </>
   );

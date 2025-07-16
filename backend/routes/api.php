@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('distribusi')->group(function () {
         Route::get('/state', [DistribusiController::class, 'getState']);
+        Route::get('/pwa-state', [DistribusiController::class, 'getPwaState']); // Route baru untuk state PWA
         Route::post('/setup-batches', [DistribusiController::class, 'setupBatches']);
         Route::post('/distribute', [DistribusiController::class, 'distributeLinks']);
         Route::put('/batch/{batch}', [DistribusiController::class, 'updateBatch']);
@@ -46,5 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('pwa')->group(function () {
         Route::get('/devices', [PwaDeviceController::class, 'index']);
         Route::post('/generate-pairing-token', [PwaDeviceController::class, 'generatePairingToken']);
+        Route::delete('/devices/{pwaDevice}', [PwaDeviceController::class, 'destroy']);
     });
 });

@@ -78,11 +78,27 @@ class PwaDeviceController extends Controller
         // Hapus token setelah berhasil digunakan
         $pairingToken->delete();
 
-        // Di sini kita bisa membuat token otentikasi khusus untuk PWA jika perlu,
-        // namun untuk sekarang kita kembalikan pesan sukses saja.
         return response()->json([
             'message' => 'Perangkat berhasil ditautkan!',
             'device' => $device,
         ], 200);
+    }
+
+    /**
+     * Menghapus perangkat PWA yang terdaftar.
+     *
+     * @param  \App\Models\PwaDevice  $pwaDevice
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(PwaDevice $pwaDevice)
+    {
+        // Otorisasi: Pastikan perangkat ini milik user yang sedang login
+        if ($pwaDevice->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Tidak diizinkan'], 403);
+        }
+
+        $pwaDevice->delete();
+
+        return response()->json(null, 204); // 204 No Content
     }
 }

@@ -44,4 +44,12 @@ class PwaDevice extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Mendefinisikan relasi bahwa perangkat PWA memiliki banyak link.
+     */
+    public function pwaLinks()
+    {
+        return $this->hasMany(PwaLink::class);
+    }
 }

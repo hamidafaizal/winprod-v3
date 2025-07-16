@@ -20,7 +20,8 @@ const RisetPage = lazy(() => import('./pages/RisetPage.jsx'));
 const DistribusiLinkPage = lazy(() => import('./pages/DistribusiLinkPage.jsx'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage.jsx'));
 const ManajemenPwaPage = lazy(() => import('./pages/ManajemenPwaPage.jsx'));
-// Menambahkan halaman PWA
+const DistribusiPwaPage = lazy(() => import('./pages/DistribusiPwaPage.jsx')); // Menambahkan halaman baru
+// Halaman PWA
 const PwaAuthPage = lazy(() => import('./pages/PwaAuthPage.jsx'));
 const PwaChatPage = lazy(() => import('./pages/PwaChatPage.jsx'));
 
@@ -52,8 +53,7 @@ function AppRoutes() {
     const isPwaMode = window.matchMedia('(display-mode: standalone)').matches;
     
     if (isPwaMode) {
-      // Logika untuk PWA yang terinstal
-      const isPaired = !!localStorage.getItem('pwa_is_paired'); // Nanti kita buat logika ini lebih canggih
+      const isPaired = !!localStorage.getItem('pwa_is_paired');
       
       if (isPaired && location.pathname !== '/pwa-chat') {
         navigate('/pwa-chat', { replace: true });
@@ -81,6 +81,7 @@ function AppRoutes() {
         <Route path="/manajemen-pwa" element={<ProtectedRoute><ManajemenPwaPage /></ProtectedRoute>} />
         <Route path="/riset" element={<ProtectedRoute><RisetPage /></ProtectedRoute>} />
         <Route path="/distribusi-link" element={<ProtectedRoute><DistribusiLinkPage /></ProtectedRoute>} />
+        <Route path="/distribusi-pwa" element={<ProtectedRoute><DistribusiPwaPage /></ProtectedRoute>} /> {/* Menambahkan rute baru */}
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
