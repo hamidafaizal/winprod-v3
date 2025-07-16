@@ -7,6 +7,7 @@ use App\Http\Controllers\RisetController;
 use App\Http\Controllers\DistribusiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PwaDeviceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +15,15 @@ use App\Http\Controllers\AuthController;
 |--------------------------------------------------------------------------
 */
 
+// Rute publik untuk login, register, dan pairing PWA
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/pwa/pair-device', [PwaDeviceController::class, 'pairDevice']); // Route publik untuk PWA
 
+// Rute yang memerlukan otentikasi
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-    // Perubahan: Tambahkan route untuk update profil
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
     Route::apiResource('kontak', KontakController::class);
@@ -38,4 +41,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/dashboard/force-restart', [DashboardController::class, 'forceRestart']);
     Route::get('/dashboard/history', [DashboardController::class, 'getHistory']);
+
+    // Route untuk fungsionalitas PWA yang memerlukan login
+    Route::prefix('pwa')->group(function () {
+        Route::get('/devices', [PwaDeviceController::class, 'index']);
+        Route::post('/generate-pairing-token', [PwaDeviceController::class, 'generatePairingToken']);
+    });
 });

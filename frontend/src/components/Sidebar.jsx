@@ -12,7 +12,8 @@ import {
   FaFlask,
   FaLink,
   FaIdCard,
-  FaSyncAlt
+  FaSyncAlt,
+  FaLaptopCode // Menambahkan ikon baru untuk PWA
 } from 'react-icons/fa';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import { forceRestartSystem } from '../api.js';
@@ -33,6 +34,8 @@ const Sidebar = () => {
   const navItems = [
     { icon: <FaTachometerAlt />, text: 'Dashboard', to: '/dashboard' },
     { icon: <FaMobileAlt />, text: 'Manajemen HP', to: '/manajemen-hp' },
+    // Menambahkan item navigasi baru untuk Manajemen PWA
+    { icon: <FaLaptopCode />, text: 'Manajemen PWA', to: '/manajemen-pwa' },
     { icon: <FaFlask />, text: 'Riset', to: '/riset' },
     { icon: <FaLink />, text: 'Distribusi Link', to: '/distribusi-link' },
   ];

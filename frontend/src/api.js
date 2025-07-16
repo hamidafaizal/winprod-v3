@@ -13,7 +13,6 @@ export const registerUser = (data) => apiClient.post('/register', data);
 export const loginUser = (credentials) => apiClient.post('/login', credentials);
 export const logoutUser = () => apiClient.post('/logout');
 export const getUser = () => apiClient.get('/user');
-// Perubahan: Tambahkan fungsi untuk update profil
 export const updateUserProfile = (data) => apiClient.put('/user/profile', data);
 
 
@@ -41,5 +40,13 @@ export const logSentLinks = (batchId) => apiClient.post('/distribusi/log-sent', 
 // --- Dashboard ---
 export const forceRestartSystem = () => apiClient.post('/dashboard/force-restart');
 export const getDashboardHistory = () => apiClient.get('/dashboard/history');
+
+// --- PWA Devices ---
+export const getPwaDevices = () => apiClient.get('/pwa/devices');
+// Fungsi untuk membuat token QR di PC
+export const generatePairingToken = () => apiClient.post('/pwa/generate-pairing-token');
+// Fungsi untuk PWA di HP mengirimkan hasil scan
+export const pairPwaDevice = (data) => apiClient.post('/pwa/pair-device', data);
+
 
 export default apiClient;

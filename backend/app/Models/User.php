@@ -86,4 +86,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(CacheLink::class);
     }
+
+    /**
+     * Mendefinisikan relasi bahwa seorang User memiliki banyak perangkat PWA.
+     */
+    public function pwaDevices()
+    {
+        return $this->hasMany(PwaDevice::class);
+    }
 }
