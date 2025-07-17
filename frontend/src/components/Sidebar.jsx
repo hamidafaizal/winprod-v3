@@ -37,9 +37,9 @@ const Sidebar = () => {
     { icon: <FaMobileAlt />, text: 'Manajemen HP', to: '/manajemen-hp' },
     { icon: <FaLaptopCode />, text: 'Manajemen PWA', to: '/manajemen-pwa' },
     { icon: <FaFlask />, text: 'Riset', to: '/riset' },
-    { icon: <FaLink />, text: 'Distribusi (WA)', to: '/distribusi-link' },
+    { icon: <FaLink />, text: 'Distribusi Link', to: '/distribusi-link' },
     // Menambahkan item navigasi baru untuk Distribusi PWA
-    { icon: <FaShareSquare />, text: 'Distribusi (PWA)', to: '/distribusi-pwa' },
+    { icon: <FaShareSquare />, text: 'Distribusi PWA', to: '/distribusi-pwa' },
   ];
 
   const activeLinkClass = 'bg-blue-500 text-white';
